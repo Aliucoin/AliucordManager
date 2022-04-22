@@ -37,10 +37,9 @@ fun PluginsList() = Column(
 
     if (plugins.isNotEmpty()) {
         OutlinedTextField(
-            maxLines = 1,
+            modifier = Modifier.fillMaxWidth(),
             value = search,
             onValueChange = { search = it },
-            modifier = Modifier.fillMaxWidth(),
             label = { Text(stringResource(R.string.search)) },
             trailingIcon = { Icon(Icons.Default.Search, stringResource(R.string.search_plugins)) },
             keyboardOptions = KeyboardOptions(autoCorrect = false, imeAction = ImeAction.Search),

@@ -7,13 +7,11 @@ package com.aliucord.manager.ui.components.plugins
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.toggleable
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -37,7 +35,6 @@ fun PluginCard(
             modifier = Modifier.padding(12.dp)
         ) {
             var isEnabled by remember { mutableStateOf(true) }
-            val uriHandler = LocalUriHandler.current
 
             // Header
             Row(
@@ -57,33 +54,10 @@ fun PluginCard(
                         }
                     )
 
-                    // Authors
-                    val authors = buildAnnotatedString {
-                        pushStyle(SpanStyle(color = MaterialTheme.colorScheme.secondary))
-                        append("By ")
-
-                        val authors = plugin.manifest.authors
-                        authors.forEachIndexed { i, author ->
-                            withStyle(SpanStyle(color = MaterialTheme.colorScheme.primary)) {
-                                val start = this@buildAnnotatedString.length
-                                append(author.name)
-                                addStringAnnotation("authorId", author.id.toString(), start, start + author.name.length)
-                            }
-                            if (authors.size < i)
-                                append(',')
-                        }
-                    }
-                    ClickableText(
-                        text = authors,
-                        style = MaterialTheme.typography.labelMedium,
-                        onClick = {
-                            authors.getStringAnnotations("authorId", it, it)
-                                .firstOrNull()
-                                ?.let { (id) ->
-                                    val url = "https://discord.com/users/$id"
-                                    uriHandler.openUri(url)
-                                }
-                        }
+                    // Author(s)
+                    Text(
+                        "By ${plugin.manifest.authors.joinToString { it.name }}",
+                        style = MaterialTheme.typography.labelMedium
                     )
                 }
 
@@ -96,19 +70,17 @@ fun PluginCard(
                 )
             }
 
-            Divider(modifier = Modifier.alpha(0.1f))
-
             // Description
             Text(
                 text = plugin.manifest.description,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier
-                    .heightIn(max = 60.dp, min = 20.dp)
-                    .padding(top = 10.dp),
+                modifier = Modifier.heightIn(min = 50.dp),
+                style = MaterialTheme.typography.bodyMedium
             )
 
             // Buttons
             Row(Modifier.fillMaxWidth()) {
+                val uriHandler = LocalUriHandler.current
+
                 IconButton(
                     onClick = {
                         uriHandler.openUri(
